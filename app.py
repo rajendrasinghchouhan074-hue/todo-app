@@ -1,4 +1,5 @@
 import json
+from datetime import date
 from pathlib import Path
 
 from flask import Flask, redirect, render_template, request, url_for
@@ -17,15 +18,17 @@ def save(todos):
 
 @app.route("/")
 def index():
-    return render_template("index.html", todos=load())
+    return render_template("index.html", todos=load(), today=date.today().isoformat())
 
 
 @app.route("/add", methods=["POST"])
 def add():
     text = request.form.get("text", "").strip()
+    priority = request.form.get("priority", "Medium")
+    due = request.form.get("due", "")
     if text:
         todos = load()
-        todos.append({"text": text, "done": False})
+        todos.append({"text": text, "done": False, "priority": priority, "due": due})
         save(todos)
     return redirect(url_for("index"))
 

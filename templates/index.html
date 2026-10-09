@@ -5,13 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Todo App</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
-    form { display: flex; gap: .5rem; margin-bottom: 1rem; }
-    input[type=text] { flex: 1; padding: .6rem; font-size: 1rem; }
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+    form { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    input[type=text] { flex: 1 1 100%; padding: .6rem; font-size: 1rem; }
+    select, input[type=date] { padding: .5rem; font-size: 1rem; }
     button { padding: .6rem 1rem; font-size: 1rem; cursor: pointer; }
     ul { list-style: none; padding: 0; }
     li { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid #ddd; }
-    li.done span { text-decoration: line-through; color: #888; }
+    li.done .text { text-decoration: line-through; color: #888; }
+    .meta { font-size: .8rem; color: #666; margin-top: .2rem; }
+    .badge { padding: .1rem .5rem; border-radius: 999px; color: #fff; font-size: .75rem; margin-right: .4rem; }
+    .High { background: #d93025; }
+    .Medium { background: #f29900; }
+    .Low { background: #188038; }
+    .overdue { color: #d93025; font-weight: 600; }
     a { text-decoration: none; margin-left: .75rem; }
   </style>
 </head>
@@ -19,19 +26,35 @@
   <h1>Todo App</h1>
   <form action="{{ url_for('add') }}" method="post">
     <input type="text" name="text" placeholder="New task..." required autofocus>
+    <select name="priority">
+      <option>High</option>
+      <option selected>Medium</option>
+      <option>Low</option>
+    </select>
+    <input type="date" name="due">
     <button type="submit">Add</button>
   </form>
   <ul>
     {% for t in todos %}
     <li class="{{ 'done' if t.done else '' }}">
-      <span>{{ t.text }}</span>
+      <div>
+        <div class="text">{{ t.text }}</div>
+        <div class="meta">
+          {% if t.priority %}<span class="badge {{ t.priority }}">{{ t.priority }}</span>{% endif %}
+          {% if t.due %}
+            <span class="{{ 'overdue' if (t.due < today and not t.done) else '' }}">
+              Due: {{ t.due }}{% if t.due < today and not t.done %} (overdue){% endif %}
+            </span>
+          {% endif %}
+        </div>
+      </div>
       <span>
         <a href="{{ url_for('toggle', i=loop.index0) }}">{{ '↩' if t.done else '✓' }}</a>
         <a href="{{ url_for('delete', i=loop.index0) }}">🗑</a>
       </span>
     </li>
     {% else %}
-    <li>No tasks yet...</li>
+    <li>No tasks yet.</li>
     {% endfor %}
   </ul>
 </body>
