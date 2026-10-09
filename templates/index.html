@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todo App</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
+    form { display: flex; gap: .5rem; margin-bottom: 1rem; }
+    input[type=text] { flex: 1; padding: .6rem; font-size: 1rem; }
+    button { padding: .6rem 1rem; font-size: 1rem; cursor: pointer; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid #ddd; }
+    li.done span { text-decoration: line-through; color: #888; }
+    a { text-decoration: none; margin-left: .75rem; }
+  </style>
+</head>
+<body>
+  <h1>Todo App</h1>
+  <form action="{{ url_for('add') }}" method="post">
+    <input type="text" name="text" placeholder="New task..." required autofocus>
+    <button type="submit">Add</button>
+  </form>
+  <ul>
+    {% for t in todos %}
+    <li class="{{ 'done' if t.done else '' }}">
+      <span>{{ t.text }}</span>
+      <span>
+        <a href="{{ url_for('toggle', i=loop.index0) }}">{{ '↩' if t.done else '✓' }}</a>
+        <a href="{{ url_for('delete', i=loop.index0) }}">🗑</a>
+      </span>
+    </li>
+    {% else %}
+    <li>No tasks yet...</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
